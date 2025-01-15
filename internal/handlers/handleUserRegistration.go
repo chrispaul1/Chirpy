@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"chrispaul1/chirpy/internal/auth"
 	"chrispaul1/chirpy/internal/database"
 	"encoding/json"
 	"net/http"
@@ -17,34 +18,46 @@ func (h *UserHandler) HandleUserRegistration(w http.ResponseWriter, req *http.Re
 		Email     string    `json:"email"`
 	}
 
-	type userEmail struct {
-		Body string `json:"email"`
+	type userParams struct {
+		Password string `json:"password"`
+		Email    string `json:"email"`
 	}
 	decoder := json.NewDecoder(req.Body)
-	newEmail := userEmail{}
-	err := decoder.Decode(&newEmail)
+	userFields := userParams{}
+	err := decoder.Decode(&userFields)
 	if err != nil {
 		errMsg := "Something went wrong"
 		RespondWithError(w, 400, errMsg)
+		return
+	}
+
+	userHashedPass, err := auth.HashPassword(userFields.Password)
+	if err != nil {
+		errMsg := "Password not accepted"
+		RespondWithError(w, 400, errMsg)
+		return
 	}
 
 	userStruct := database.CreateUserParams{
-		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
-		Email:     newEmail.Body,
+		ID:             uuid.New(),
+		CreatedAt:      time.Now(),
+		UpdatedAt:      time.Now(),
+		Email:          userFields.Email,
+		HashedPassword: userHashedPass,
 	}
 
 	newUser, err := h.cfg.DB.CreateUser(req.Context(), userStruct)
-	bodyUser := User{
+	if err != nil {
+		errMsg := "Something went wrong in creating the user"
+		RespondWithError(w, 400, errMsg)
+		return
+	}
+
+	userResponse := User{
 		ID:        newUser.ID,
 		CreatedAt: newUser.CreatedAt,
 		UpdatedAt: newUser.UpdatedAt,
 		Email:     newUser.Email,
 	}
-	if err != nil {
-		errMsg := "Something went wrong in creating the user"
-		RespondWithError(w, 400, errMsg)
-	}
-	RespondWithJson(w, 201, bodyUser)
+	RespondWithJson(w, 201, userResponse)
 }

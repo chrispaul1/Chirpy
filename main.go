@@ -5,6 +5,7 @@ import (
 	"chrispaul1/chirpy/internal/database"
 	"chrispaul1/chirpy/internal/handlers"
 	"database/sql"
+	"errors"
 	"log"
 	"net/http"
 	"os"
@@ -32,6 +33,12 @@ func main() {
 		FileserverHits: atomic.Int32{},
 		DB:             dbQueries,
 		Platform:       os.Getenv("PLATFORM"),
+		JWT_SECRET:     os.Getenv("JWT_SECRET"),
+	}
+
+	if newApiConfig.JWT_SECRET == "" {
+		err := errors.New("token secret missing, failed to generate JWT")
+		log.Fatal(err)
 	}
 	mux := http.NewServeMux()
 	userHandler := handlers.NewUserHandler(&newApiConfig)
@@ -43,8 +50,14 @@ func main() {
 	mux.HandleFunc("GET /api/healthz", okHandler)
 	mux.HandleFunc("POST /admin/reset", userHandler.ResetHandler)
 	mux.HandleFunc("GET /admin/metrics", userHandler.MetricsHandler)
-	mux.HandleFunc("POST /api/validate_chirp", userHandler.HandleChirpValidate)
 	mux.HandleFunc("POST /api/users", userHandler.HandleUserRegistration)
+	mux.HandleFunc("POST /api/chirps", userHandler.HandleChirps)
+	mux.HandleFunc("GET /api/chirps", userHandler.HandleGetAllChirps)
+	mux.HandleFunc("GET /api/chirps/{chirpID}", userHandler.HandleGetChirpByID)
+	mux.HandleFunc("POST /api/login", userHandler.HandleUserLogin)
+	mux.HandleFunc("POST /api/refresh", userHandler.HandlerRefresh)
+	mux.HandleFunc("POST /api/revoke", userHandler.HandleRevoke)
+	mux.HandleFunc("PUT /api/users", userHandler.HandleUserEmailAndPassUpdate)
 
 	server := &http.Server{
 		Addr:    ":8080",
