@@ -9,7 +9,13 @@ ORDER BY created_at ASC;
 
 -- name: GetChirpByID :one
 SELECT * FROM chirps
-WHERE id=$1;
+WHERE id=$1
+ORDER BY created_at ASC;
+
+-- name: GetChirpByUserID :many
+SELECT * FROM chirps
+WHERE user_id=$1
+ORDER BY created_at ASC;
 
 -- name: DeleteChirp :one
 DELETE FROM chirps
