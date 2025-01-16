@@ -10,4 +10,5 @@ type ApiConfig struct {
 	DB             *database.Queries
 	Platform       string
 	JWT_SECRET     string
+	POLKA_KEY      string
 }

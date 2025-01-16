@@ -34,6 +34,7 @@ func main() {
 		DB:             dbQueries,
 		Platform:       os.Getenv("PLATFORM"),
 		JWT_SECRET:     os.Getenv("JWT_SECRET"),
+		POLKA_KEY:      os.Getenv("POLKA_KEY"),
 	}
 
 	if newApiConfig.JWT_SECRET == "" {
@@ -58,6 +59,8 @@ func main() {
 	mux.HandleFunc("POST /api/refresh", userHandler.HandlerRefresh)
 	mux.HandleFunc("POST /api/revoke", userHandler.HandleRevoke)
 	mux.HandleFunc("PUT /api/users", userHandler.HandleUserEmailAndPassUpdate)
+	mux.HandleFunc("DELETE /api/chirps/{chirpID}", userHandler.HandleDeleteChirp)
+	mux.HandleFunc("POST /api/polka/webhooks", userHandler.HandleWebhooks)
 
 	server := &http.Server{
 		Addr:    ":8080",

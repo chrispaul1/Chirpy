@@ -20,6 +20,7 @@ func (h *UserHandler) HandleUserLogin(w http.ResponseWriter, req *http.Request) 
 		Email        string    `json:"email"`
 		Token        string    `json:"token"`
 		RefreshToken string    `json:"refresh_token"`
+		IsChirpyRed  bool      `json:"is_chirpy_red"`
 	}
 
 	type userParams struct {
@@ -85,6 +86,7 @@ func (h *UserHandler) HandleUserLogin(w http.ResponseWriter, req *http.Request) 
 		Email:        user.Email,
 		Token:        jwtToken,
 		RefreshToken: newRefreshToken,
+		IsChirpyRed:  user.IsChirpyRed,
 	}
 	RespondWithJson(w, http.StatusOK, userResponse)
 }

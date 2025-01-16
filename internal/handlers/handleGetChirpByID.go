@@ -19,7 +19,7 @@ func (h *UserHandler) HandleGetChirpByID(w http.ResponseWriter, req *http.Reques
 	userChirp, err := h.cfg.DB.GetChirpByID(req.Context(), chirpID)
 	if err != nil {
 		errMsg := "Error, could not retrieve the chirp"
-		RespondWithError(w, http.StatusBadRequest, errMsg)
+		RespondWithError(w, http.StatusNotFound, errMsg)
 		return
 	}
 

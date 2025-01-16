@@ -14,10 +14,11 @@ import (
 func (h *UserHandler) HandleUserEmailAndPassUpdate(w http.ResponseWriter, req *http.Request) {
 	//user struct
 	type User struct {
-		ID        uuid.UUID `json:"id"`
-		CreatedAt time.Time `json:"created_at"`
-		UpdatedAt time.Time `json:"updated_at"`
-		Email     string    `json:"email"`
+		ID          uuid.UUID `json:"id"`
+		CreatedAt   time.Time `json:"created_at"`
+		UpdatedAt   time.Time `json:"updated_at"`
+		Email       string    `json:"email"`
+		IsChirpyRed bool      `json:"is_chirpy_red"`
 	}
 
 	//Decode the user password and email from request
@@ -74,12 +75,12 @@ func (h *UserHandler) HandleUserEmailAndPassUpdate(w http.ResponseWriter, req *h
 	}
 
 	userResponse := User{
-		ID:        updatedUser.ID,
-		CreatedAt: updatedUser.CreatedAt,
-		UpdatedAt: updatedUser.UpdatedAt,
-		Email:     updatedUser.Email,
+		ID:          updatedUser.ID,
+		CreatedAt:   updatedUser.CreatedAt,
+		UpdatedAt:   updatedUser.UpdatedAt,
+		Email:       updatedUser.Email,
+		IsChirpyRed: updatedUser.IsChirpyRed,
 	}
 
 	RespondWithJson(w, http.StatusOK, userResponse)
-
 }

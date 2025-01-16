@@ -9,5 +9,8 @@ CREATE TABLE users(
 ALTER TABLE users 
 ADD COLUMN hashed_password TEXT UNIQUE NOT NULL DEFAULT 'unset';
 
+ALTER TABLE users
+ADD COLUMN is_chirpy_red BOOL NOT NULL DEFAULT FALSE;
+
 -- +goose Down
 DROP TABLE users;
